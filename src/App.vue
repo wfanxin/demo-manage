@@ -31,10 +31,8 @@ export default {
     })()
     if (os.isAndroid || os.isPhone) {
       console.log('当前设备-手机')
-      window.location.href = 'https://mwap.plerp.cn/'
     } else if (os.isTablet) {
       console.log('当前设备-平板')
-      window.location.href = 'https://mwap.plerp.cn/'
     } else if (os.isPc) {
       console.log('当前设备-电脑')
     }
