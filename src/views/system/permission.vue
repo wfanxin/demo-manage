@@ -175,9 +175,7 @@ export default {
       getTotal().then(res => {
         var permissions = res.list
         this.permissionOptions = this.initPermission(permissions)
-      }).catch(() => {
-
-      })
+      }).catch(() => {})
     },
     initPermission: function(e) {
       var permissionOptions = []
@@ -263,6 +261,7 @@ export default {
           message: '刷新成功',
           type: 'success'
         })
+        this.getSelect()
         this.getList()
       }).catch(() => {
         this.refresh = false
