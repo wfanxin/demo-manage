@@ -32,10 +32,8 @@
       </el-col>
 
       <!--列表-->
-      <el-table v-loading="loading" :data="data" highlight-current-row @selection-change="selsChange" style="width: 100%;" :row-class-name="tableRowClassName">
-        <el-table-column type="selection" width="55">
-        </el-table-column>
-        <el-table-column prop="id" width="60" label="ID">
+      <el-table v-loading="loading" :data="data" highlight-current-row style="width: 100%;" :row-class-name="tableRowClassName">
+        <el-table-column prop="id" width="120" label="ID">
         </el-table-column>
         <el-table-column prop="name" label="权限名称">
         </el-table-column>
@@ -53,11 +51,11 @@
           </template>
         </el-table-column>
       </el-table>
-    <!--页码-->
-    <el-pagination background layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="15" :total="total" style="text-align:center;margin-top:10px">
-    </el-pagination>
+      <!--页码-->
+      <el-pagination background layout="total, prev, pager, next" @current-change="handleCurrentChange" :page-size="15" :total="total" style="text-align:center;margin-top:10px">
+      </el-pagination>
 
-    <!--编辑界面-->
+      <!--编辑界面-->
       <el-dialog
         title="编辑" 
         :visible.sync="dialogFormVisible" 
@@ -74,7 +72,6 @@
               </el-option>
             </el-select>
           </el-form-item>
-
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click.native="resetForm()">取消</el-button>
@@ -127,18 +124,14 @@ export default {
       dialogFormVisible: false,
       refresh: false,
       refreshTitle: '刷新权限',
-      columns: [
-        {
-          text: '权限名称',
-          value: 'name'
-        },
-        {
-          text: 'key',
-          value: 'key'
-        }
-      ],
-      data: [
-      ],
+      columns: [{
+        text: '权限名称',
+        value: 'name'
+      }, {
+        text: 'key',
+        value: 'key'
+      }],
+      data: [],
       defaultId: 0,
       // 编辑界面数据
       editForm: {
@@ -169,7 +162,6 @@ export default {
     handleItemChange(e) {
       var index = e.length - 1
       this.filters.permission = e[index]
-      console.log(this.filters.permission)
     },
     getSelect() {
       getTotal().then(res => {
@@ -198,10 +190,6 @@ export default {
       this.page = val
       this.getList()
     },
-    // 全选单选多选
-    selsChange(sels) {
-      this.sels = sels
-    },
     // 编辑
     updateData() {
       const para = Object.assign({}, this.editForm)
@@ -228,7 +216,6 @@ export default {
 
       setTimeout(() => {
         this.$refs.editForm.clearValidate()
-        console.log(this.$refs)
       }, 100)
     },
     isShow(row, column) {
@@ -242,7 +229,6 @@ export default {
       }
 
       getList(para).then(res => {
-        console.log(res)
         this.data = res.list
         this.total = res.total
         this.loading = false

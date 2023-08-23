@@ -4,7 +4,7 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters" @submit.native.prevent>
 				<el-form-item>
-					<el-input v-model="filters.name" placeholder="姓名"></el-input>
+					<el-input v-model="filters.name" placeholder="姓名" clearable></el-input>
 				</el-form-item>
         <el-form-item>
 					<el-select v-model="filters.userStatus" placeholder="状态">
@@ -22,20 +22,20 @@
 				<el-form-item>
 					<el-button type="primary" @click="handleAdd">新增</el-button>
 				</el-form-item>
-                <el-form-item>
-                    <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
-                </el-form-item>
+        <el-form-item>
+            <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
+        </el-form-item>
 			</el-form>
 		</el-col>
 
 		<!--列表-->
 		<el-table v-loading="loading" :data="users" highlight-current-row
-    @selection-change="selsChange"
-    @sort-change="sortChange"
-    :default-sort = "{prop: 'updated_at', order: 'descending'}"
-     style="width: 100%;">
+      @selection-change="selsChange"
+      @sort-change="sortChange"
+      :default-sort = "{prop: 'updated_at', order: 'descending'}"
+      style="width: 100%;">
 			<el-table-column type="selection" width="55"></el-table-column>
-			<el-table-column type="index" width="60"></el-table-column>
+			<el-table-column type="index" label="ID" width="60"></el-table-column>
 			<el-table-column prop="name" label="姓名"></el-table-column>
       <el-table-column prop="user_name" label="用户名"></el-table-column>
       <el-table-column prop="status" label="状态" :formatter="formatStatus" width="60"></el-table-column>
@@ -52,10 +52,10 @@
 		</el-table>
 
 		<!--页码-->
-    <el-pagination background layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="text-align:center;margin-top:10px">
+    <el-pagination background layout="total, prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="text-align:center;margin-top:10px">
     </el-pagination>
-        <!--新增界面-->
 
+    <!--新增界面-->
 		<!--编辑界面-->
 		<el-dialog
       :title="textMap[dialogStatus]"
@@ -97,10 +97,9 @@
 				</el-form-item>
 
         <el-form-item label="角色" prop="roles">
-            <el-radio-group
-                v-model="form.user_roles">
-                <el-radio v-for="role in total_roles" :label="role.id" :key="role.id">{{role.name}}</el-radio>
-            </el-radio-group>
+          <el-radio-group v-model="form.user_roles">
+            <el-radio v-for="role in total_roles" :label="role.id" :key="role.id">{{role.name}}</el-radio>
+          </el-radio-group>
         </el-form-item>
 
 			</el-form>
@@ -306,18 +305,16 @@ export default {
     handleDel(index, row) {
       this.$confirm('确认删除该记录吗?', '提示', {
         type: 'warning'
-      })
-        .then(() => {
-          const para = { id: row.id }
-          removeUser(para).then(res => {
-            this.$message({
-              message: '删除成功',
-              type: 'success'
-            })
-            this.getUsers()
+      }).then(() => {
+        const para = { id: row.id }
+        removeUser(para).then(res => {
+          this.$message({
+            message: '删除成功',
+            type: 'success'
           })
+          this.getUsers()
         })
-        .catch(() => {})
+      }).catch(() => {})
     },
     // 显示编辑界面
     handleEdit(index, row) {
@@ -363,33 +360,26 @@ export default {
 
       this.$refs.form.validate(valid => {
         if (valid) {
-          this.$confirm('确认提交吗？', '提示', {})
-            .then(() => {
-              const para = Object.assign({}, this.form)
-              para.id = this.defaultId
+          this.$confirm('确认提交吗？', '提示', {}).then(() => {
+            const para = Object.assign({}, this.form)
+            para.id = this.defaultId
 
-              editUser(para).then(res => {
-                if (res.code !== 0) {
-                  this.$message({
-                    message: res.message,
-                    type: 'error'
-                  })
-                } else {
-                  this.$message({
-                    message: '提交成功',
-                    type: 'success'
-                  })
-                  this.resetForm()
-                  this.getUsers()
-                }
-              }).catch(e => {
-                console.log(e)
-              })
-            })
-            .catch(e => {
-              // 打印一下错误
-              console.log(e)
-            })
+            editUser(para).then(res => {
+              if (res.code !== 0) {
+                this.$message({
+                  message: res.message,
+                  type: 'error'
+                })
+              } else {
+                this.$message({
+                  message: '提交成功',
+                  type: 'success'
+                })
+                this.resetForm()
+                this.getUsers()
+              }
+            }).catch(e => {})
+          }).catch(e => {})
         }
       })
     },
@@ -420,14 +410,11 @@ export default {
                   this.resetForm()
                   this.getUsers()
                 }
-              }).catch(e => {
-                console.log(e)
-              })
+              }).catch(e => {})
             })
             .catch(e => {
               // 打印一下错误
               this.resetForm()
-              console.log(e)
             })
         }
       })
@@ -469,9 +456,7 @@ export default {
             type: 'error'
           })
         }
-      }).catch(e => {
-        console.log(e)
-      })
+      }).catch(e => {})
     },
     getRoles() {
       getRoleTotal().then(res => {

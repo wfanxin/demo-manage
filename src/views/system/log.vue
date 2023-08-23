@@ -4,7 +4,7 @@
 		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
 			<el-form :inline="true" :model="filters" @submit.native.prevent>
 				<el-form-item>
-					<el-input v-model="filters.user_name" placeholder="操作人员账号"></el-input>
+					<el-input v-model="filters.user_name" placeholder="操作人员账号" clearable></el-input>
 				</el-form-item>
         <el-form-item>
           <el-date-picker
@@ -48,7 +48,6 @@
 			</el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <!-- Table -->
           <el-button type="text" @click="detail(scope.$index, scope.row)">查看详情</el-button>
         </template>
 			</el-table-column>
@@ -61,7 +60,7 @@
       </el-table>
     </el-dialog>
 		<!--页码-->
-    <el-pagination background layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="text-align:center;margin-top:10px">
+    <el-pagination background layout="total, prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="text-align:center;margin-top:10px">
     </el-pagination>
 	</section>
 </template>
@@ -153,7 +152,6 @@ export default {
     handleItemChange(e) {
       var index = e.length - 1
       this.filters.permission = e[index]
-      console.log(this.filters.permission)
     },
     getSelect() {
       getPermissionTotal().then(res => {
