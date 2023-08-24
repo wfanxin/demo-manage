@@ -5,9 +5,16 @@
     <nx-breadcrumb class="breadcrumb-container"></nx-breadcrumb>
 
     <div class="right-menu">
-     <!-- <nx-lang-select class="international right-menu-item"></nx-lang-select> -->
+      <!-- <nx-lang-select class="international right-menu-item"></nx-lang-select> -->
 
       <span style="position: relative; top: -13px;">您好，{{ username }}</span>
+
+      <nx-top-lock style="cursor:pointer" class="nx-help"></nx-top-lock>
+      <!-- <el-tooltip effect="dark" content="全屏" placement="bottom">
+        <nx-full-screen class="screenfull right-menu-item"></nx-full-screen>
+      </el-tooltip> -->
+
+      <nx-skin class="theme-switch right-menu-item"></nx-skin>
 
       <el-dropdown class="avatar-container right-menu-item" trigger="click">
         <div class="avatar-wrapper">
@@ -66,6 +73,7 @@ import nxHamburger from '@/components/nx-hamburger'
 import nxFullScreen from '@/components/nx-full-screen/index'
 import nxLangSelect from '@/components/nx-lang-select/index'
 import nxGithub from '@/components/nx-github/index'
+import nxSkin from '@/components/nx-skin/index'
 import store from '@/store'
 import { changePwd } from '@/api/user-table'
 export default {
@@ -167,6 +175,7 @@ export default {
     nxFullScreen,
     nxLangSelect,
     nxTopLock,
+    nxSkin,
     nxGithub
     // ErrorLog
   },

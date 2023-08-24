@@ -7,8 +7,8 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-/* layout */
-import layout from '../views/layout/Layout'
+/* Layout */
+import Layout from '../views/layout/Layout'
 
 /**
 * hidden: true                   if `hidden:true` will not show in the sidebar(default is false)
@@ -24,33 +24,33 @@ import layout from '../views/layout/Layout'
 **/
 export const constantRouterMap = [
   {
-    path: '/',
+    path: '',
     redirect: '/welcome/welcome'
   },
   {
     path: '/welcome',
-    component: layout,
+    component: Layout,
     name: '首页',
     meta: { title: '首页', icon: 'dashboard' },
     children: [
       {
         path: 'welcome',
-        name: 'welcome',
+        name: '欢迎页',
         component: () => import('@/views/common/welcome'),
         meta: { title: '首页', icon: 'dashboard' }
       }
     ]
   },
-  { path: '/login', component: () => import('@/views/login'), name: '登录NxAdmin', hidden: true },
+  { path: '/login', component: () => import('@/views/login'), name: '登录', hidden: true },
+  { path: '/401', component: () => import('@/views/error-page/401'), name: 'page401', hidden: true, meta: { title: 'page401', noCache: true }},
+  { path: '/404', component: () => import('@/views/error-page/404'), name: 'page404', hidden: true, meta: { title: 'page404', noCache: true }},
   // 锁屏
   {
     path: '/lock',
     hidden: true,
     name: '锁屏页',
     component: () => import('@/views/common/lock')
-  },
-  { path: '/401', component: () => import('@/views/error-page/401'), name: 'page401', hidden: true, meta: { title: 'page401', noCache: true }},
-  { path: '/404', component: () => import('@/views/error-page/404'), name: 'page404', hidden: true, meta: { title: 'page404', noCache: true }}
+  }
 ]
 
 export default new Router({
@@ -61,7 +61,7 @@ export default new Router({
 export const asyncRouterMap = [
   {
     path: '/property',
-    component: layout,
+    component: Layout,
     redirect: 'noredirect',
     name: '物业管理',
     key: 'Property',
@@ -81,7 +81,7 @@ export const asyncRouterMap = [
     }]
   }, {
     path: '/system',
-    component: layout,
+    component: Layout,
     redirect: 'noredirect',
     name: '系统管理',
     key: 'System', // 权限判断使用
@@ -101,7 +101,8 @@ export const asyncRouterMap = [
       }
     }, {
       path: 'role',
-      component: () => import('@/views/system/role'),
+      // component: () => import('@/views/system/role-tree'), // 树形
+      component: () => import('@/views/system/role-table'), // 表格
       name: '角色列表',
       key: '@Get:lv_roles',
       // hidden: true,
@@ -129,5 +130,6 @@ export const asyncRouterMap = [
         icon: 'form'
       }
     }]
-  }
+  },
+  { path: '*', redirect: '/404', hidden: true }
 ]

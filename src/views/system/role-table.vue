@@ -13,7 +13,7 @@
 					<el-button type="primary" @click="handleAdd">新增</el-button>
 				</el-form-item>
           <el-form-item>
-            <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
+            <el-button type="danger" @click="batchRemove" :disabled="this.sels.length === 0">批量删除</el-button>
           </el-form-item>
 			</el-form>
 		</el-col>
@@ -52,18 +52,18 @@
 				<el-form-item label="角色名称" prop="name">
 					<el-input v-model="editForm.name" auto-complete="off"></el-input>
 				</el-form-item>
-          <el-form-item label="权限" prop="rolePermissions">
-            <el-tree
-              ref="tree"
-              class="el-form-permisson-item"
-              :props="props"
-              :data="permissions"
-              node-key="id"
-              default-expand-all
-              show-checkbox
-              @check-change="handleCheckChange">
-            </el-tree>
-          </el-form-item>
+        <el-form-item label="权限" prop="rolePermissions">
+          <el-tree
+            ref="tree"
+            class="el-form-permisson-item"
+            :props="props"
+            :data="permissions"
+            node-key="id"
+            default-expand-all
+            show-checkbox
+            @check-change="handleCheckChange">
+          </el-tree>
+        </el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
 			 <el-button @click.native="resetForm()">取消</el-button>
@@ -137,16 +137,12 @@ export default {
     },
     // 权限选择
     rolePermissionsChange(data, checked, indeterminate) {
-      console.log(data, checked, indeterminate)
       if (checked) {
-        console.log('add:' + data.id)
         var exists = this.rolePermissions.indexOf(data.id)
-
         if (exists <= -1) {
           this.rolePermissions.push(data.id)
         }
       } else {
-        console.log('del:' + data.id)
         var index = this.rolePermissions.indexOf(data.id)
         if (index > -1) {
           this.rolePermissions.splice(index, 1)
@@ -232,10 +228,7 @@ export default {
                 this.getRoles()
               })
             })
-            .catch(e => {
-              // 打印一下错误
-              console.log(e)
-            })
+            .catch(() => {})
         }
       })
     },
@@ -260,10 +253,7 @@ export default {
                 this.getRoles()
               })
             })
-            .catch(e => {
-              // 打印一下错误
-              console.log(e)
-            })
+            .catch(() => {})
         }
       })
     },
@@ -291,17 +281,12 @@ export default {
               console.log(err)
             })
         })
-        .catch(err => {
-          this.$message.error(err.message)
-          // 打印一下错误
-          console.log(err)
-        })
+        .catch(() => {})
     },
     getList() {
       getPermissions().then(res => {
         this.permissions = res.list
-      }).catch(() => {
-      })
+      }).catch(() => {})
     }
   },
   mounted() {
