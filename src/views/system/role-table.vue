@@ -47,22 +47,46 @@
      :title="textMap[dialogStatus]"
      :visible.sync="dialogFormVisible"
      :close-on-click-modal="false"
-     :show-close="false" width="50%">
+     :show-close="false" :fullscreen="true">
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
 				<el-form-item label="角色名称" prop="name">
 					<el-input v-model="editForm.name" auto-complete="off"></el-input>
 				</el-form-item>
         <el-form-item label="权限" prop="rolePermissions">
-          <el-tree
-            ref="tree"
-            class="el-form-permisson-item"
-            :props="props"
-            :data="permissions"
-            node-key="id"
-            default-expand-all
-            show-checkbox
-            @check-change="handleCheckChange">
-          </el-tree>
+          <div class="permisson-box">
+            <div class="permisson-box-title">
+              <div class="row row1">权限模块</div>
+              <div class="row row2">二级权限模块</div>
+              <div class="row row3">三级权限模块</div>
+            </div>
+            <el-checkbox-group v-model="rolePermissions">
+              <div class="permisson-box-content">
+                <div class="permisson-box-content-item" v-for="(item, index) in permissions" :key="index">
+                  <div class="col">
+                    <el-checkbox :label="item.id" :key="item.id" :indeterminate="indeterminateList[index].indeterminate"
+                      @change="allSecond(item.children, item.id)">{{ item.name }}</el-checkbox>
+                  </div>
+                  <div style="width: 100%;">
+                    <div class="second-box" v-for="(obj, i) in item.children" :key="i">
+                      <div class="second-box-left">
+                        <div class="second-item">
+                          <el-checkbox :label="obj.id" :key="obj.id" :indeterminate="indeterminateList[index].statusList[i]"
+                            @change="allThree(obj.children, obj.id, item.children, item.id)">{{ obj.name
+                            }}</el-checkbox>
+                        </div>
+                      </div>
+                      <div class="second-box-right">
+                        <div class="three-item" v-for="(j, k) in obj.children" :key="k">
+                          <el-checkbox :label="j.id" :key="j.id"
+                            @change="selItem(item.children, obj.children, j.id, obj.id, item.id)">{{ j.name }}</el-checkbox>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </el-checkbox-group>
+          </div>
         </el-form-item>
 			</el-form>
 			<div slot="footer" class="dialog-footer">
@@ -92,13 +116,13 @@ export default {
       loading: true,
       // 权限
       permissions: [],
+      indeterminateList: [],
       props: {
         label: 'name',
         children: 'children'
       },
       defaultId: 0,
       rolePermissions: [],
-
       dialogStatus: '',
       textMap: {
         update: '编辑角色',
@@ -131,26 +155,150 @@ export default {
       this.page = 1
       this.getRoles()
     },
+    allSecond(arr, id) {
+      var arr_new = []
+      if (this.rolePermissions.indexOf(id) === -1) {
+        var indexArr = []
+        for (let index = 0; index < arr.length; index++) {
+          indexArr.push(arr[index].id)
+          if (arr[index].children && arr[index].children.length !== 0) {
+            for (let i = 0; i < arr[index].children.length; i++) {
+              indexArr.push(arr[index].children[i].id)
+            }
+          }
+        }
+        for (let index = 0; index < this.rolePermissions.length; index++) {
+          if (indexArr.indexOf(this.rolePermissions[index]) === -1) {
+            arr_new.push(this.rolePermissions[index])
+          }
+        }
+        this.$set(this, 'rolePermissions', arr_new)
+      } else {
+        for (let index = 0; index < arr.length; index++) {
+          if (this.rolePermissions.indexOf(arr[index].id) === -1) {
+            this.rolePermissions.push(arr[index].id)
+          }
+          if (arr[index].children && arr[index].children.length !== 0) {
+            for (let i = 0; i < arr[index].children.length; i++) {
+              if (this.rolePermissions.indexOf(arr[index].children[i].id) === -1) {
+                this.rolePermissions.push(arr[index].children[i].id)
+              }
+            }
+          }
+        }
+      }
+      this.selAll()
+    },
+    allThree(arr, id, pLength, pId) {
+      var l = 0
+      var arr_new = []
+      if (!arr) {
+        return
+      }
+      if (this.rolePermissions.indexOf(id) === -1) {
+        var indexArr = []
+        for (let index = 0; index < arr.length; index++) {
+          indexArr.push(arr[index].id)
+        }
+        for (let index = 0; index < this.rolePermissions.length; index++) {
+          if (indexArr.indexOf(this.rolePermissions[index]) === -1) {
+            arr_new.push(this.rolePermissions[index])
+          }
+        }
+        this.$set(this, 'rolePermissions', arr_new)
+        if (pLength.length === 1) {
+          if (this.rolePermissions.indexOf(pId) !== -1) {
+            this.rolePermissions.splice(this.rolePermissions.indexOf(pId), 1)
+          }
+        } else {
+          l = pLength.length
+          for (let index = 0; index < pLength.length; index++) {
+            if (this.rolePermissions.indexOf(pLength[index].id) === -1) {
+              l--
+            }
+          }
+          if (l === pLength.length) {
+            if (this.rolePermissions.indexOf(pId) === -1) {
+              this.rolePermissions.push(pId)
+            }
+          } else {
+            if (this.rolePermissions.indexOf(pId) !== -1) {
+              this.rolePermissions.splice(this.rolePermissions.indexOf(pId), 1)
+            }
+          }
+        }
+      } else {
+        for (let index = 0; index < arr.length; index++) {
+          if (this.rolePermissions.indexOf(arr[index].id) === -1) {
+            this.rolePermissions.push(arr[index].id)
+          }
+        }
+        if (pLength.length === 1) {
+          if (this.rolePermissions.indexOf(pId) === -1) {
+            this.rolePermissions.push(pId)
+          }
+        } else {
+          l = pLength.length
+          for (let index = 0; index < pLength.length; index++) {
+            if (this.rolePermissions.indexOf(pLength[index].id) === -1) {
+              l--
+            }
+          }
+          if (l === pLength.length) {
+            if (this.rolePermissions.indexOf(pId) === -1) {
+              this.rolePermissions.push(pId)
+            }
+          } else {
+            if (this.rolePermissions.indexOf(pId) !== -1) {
+              this.rolePermissions.splice(this.rolePermissions.indexOf(pId), 1)
+            }
+          }
+        }
+      }
+      this.selAll()
+    },
+    selItem(arr, arr2, id, pId, ppId) {
+      if (this.rolePermissions.indexOf(id) === -1) {
+        if (this.rolePermissions.indexOf(pId) !== -1) {
+          this.rolePermissions.splice(this.rolePermissions.indexOf(pId), 1)
+          if (arr.length === 1) {
+            if (this.rolePermissions.indexOf(ppId) !== -1) {
+              this.rolePermissions.splice(this.rolePermissions.indexOf(ppId), 1)
+            }
+          }
+        }
+      } else {
+        var status = true
+        for (let index = 0; index < arr2.length; index++) {
+          if (this.rolePermissions.indexOf(arr2[index].id) === -1) {
+            status = false
+          }
+        }
+        if (status) {
+          if (this.rolePermissions.indexOf(pId) === -1) {
+            this.rolePermissions.push(pId)
+            if (arr.length === 1) {
+              if (this.rolePermissions.indexOf(ppId) === -1) {
+                this.rolePermissions.push(ppId)
+              }
+            }
+          }
+        } else {
+          if (this.rolePermissions.indexOf(pId) !== -1) {
+            this.rolePermissions.splice(this.rolePermissions.indexOf(pId), 1)
+            if (arr.length === 1) {
+              if (this.rolePermissions.indexOf(ppId) !== -1) {
+                this.rolePermissions.splice(this.rolePermissions.indexOf(ppId), 1)
+              }
+            }
+          }
+        }
+      }
+      this.selAll()
+    },
     resetForm() {
       this.dialogFormVisible = false
       this.$refs['editForm'].resetFields()
-    },
-    // 权限选择
-    rolePermissionsChange(data, checked, indeterminate) {
-      if (checked) {
-        var exists = this.rolePermissions.indexOf(data.id)
-        if (exists <= -1) {
-          this.rolePermissions.push(data.id)
-        }
-      } else {
-        var index = this.rolePermissions.indexOf(data.id)
-        if (index > -1) {
-          this.rolePermissions.splice(index, 1)
-        }
-      }
-    },
-    handleCheckChange(data, checked, indeterminate) {
-      this.rolePermissionsChange(data, checked, indeterminate)
     },
     // 获取用户列表
     handleCurrentChange(val) {
@@ -194,19 +342,66 @@ export default {
 
       this.defaultId = row.id
       var defaultPermissions = JSON.parse(row.permission)
-      var that = this
-      setTimeout(function() { that.$refs.tree.setCheckedKeys(defaultPermissions) }, 50)
+
+      // 初始化权限默认值
+      this.rolePermissions = defaultPermissions
+      this.selAll()
+    },
+    // 判断是否全选的方法
+    selAll() {
+      for (let index = 0; index < this.permissions.length; index++) {
+        if (this.permissions[index].children && this.permissions[index].children.length !== 0) {
+          var lengthP = this.permissions[index].children.length
+          for (let i = 0; i < this.permissions[index].children.length; i++) {
+            if (this.permissions[index].children[i].children && this.permissions[index].children[i].children.length !== 0) {
+              var length = this.permissions[index].children[i].children.length
+              for (let j = 0; j < this.permissions[index].children[i].children.length; j++) {
+                if (this.rolePermissions.indexOf(this.permissions[index].children[i].children[j].id) !== -1) {
+                  length--
+                }
+              }
+              if (length === 0) {
+                this.indeterminateList[index].statusList[i] = false
+              } else {
+                if (length !== 0 && length < this.permissions[index].children[i].children.length) {
+                  this.indeterminateList[index].statusList[i] = true
+                } else {
+                  this.indeterminateList[index].statusList[i] = false
+                }
+              }
+            }
+
+            if (this.rolePermissions.indexOf(this.permissions[index].children[i].id) !== -1) {
+              lengthP--
+            }
+          }
+
+          if (lengthP === 0) {
+            this.indeterminateList[index].indeterminate = false
+          } else {
+            if (lengthP !== 0 && lengthP < this.permissions[index].children.length) {
+              this.indeterminateList[index].indeterminate = true
+            } else {
+              if (this.indeterminateList[index].statusList.indexOf(true) !== -1) {
+                this.indeterminateList[index].indeterminate = true
+              } else {
+                this.indeterminateList[index].indeterminate = false
+              }
+            }
+          }
+        }
+      }
     },
     // 显示新增界面
     handleAdd() {
       this.defaultId = 0
-      var that = this
-      setTimeout(function() { that.$refs.tree.setCheckedKeys([]) }, 50)
+      this.rolePermissions = []
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.editForm = {
         name: ''
       }
+      this.selAll()
     },
     // 编辑
     updateData() {
@@ -286,6 +481,15 @@ export default {
     getList() {
       getPermissions().then(res => {
         this.permissions = res.list
+        for (let index = 0; index < this.permissions.length; index++) {
+          this.indeterminateList.push({
+            statusList: [],
+            indeterminate: false
+          })
+          for (let i = 0; i < this.permissions[index].children.length; i++) {
+            this.indeterminateList[index].statusList.push(false)
+          }
+        }
       }).catch(() => {})
     }
   },
@@ -297,8 +501,117 @@ export default {
 </script>
 
 <style scoped>
-.el-form-permisson-item{
-  max-height: 300px;
-  overflow-y: scroll;
+* {
+  box-sizing: border-box;
+}
+
+.edit-mask-box {
+  width: 100%;
+  display: flex;
+}
+
+.permisson-box {
+  width: 100%;
+  height: calc(100vh - 300px);
+  border: 1px solid #E4E7ED;
+  margin: 0 auto;
+}
+
+.permisson-box-title {
+  display: flex;
+  width: 100%;
+  height: 53px;
+  border-bottom: 1px solid #E4E7ED;
+  background-color: #E4E7ED;
+  color: #333;
+}
+
+.permisson-box .row {
+  line-height: 53px;
+  padding-left: 35px;
+  font-size: 14px;
+}
+
+.permisson-box .row1 {
+  width: 200px;
+}
+
+.permisson-box .row2 {
+  width: 250px;
+}
+
+.permisson-box .row3 {
+  width: calc(100% - 450px);
+}
+
+.permisson-box-content {
+  width: 100%;
+  height: calc(100vh - 360px);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.permisson-box-content-item {
+  display: flex;
+}
+
+.permisson-box .col {
+  width: 200px;
+  height: 100%;
+  /* min-height: 53px; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #303133;
+  font-size: 14px;
+  border-bottom: 1px solid #E4E7ED;
+  border-right: 1px solid #E4E7ED;
+}
+
+.second-box {
+  width: 100%;
+  display: flex;
+}
+
+.second-box-left {
+  display: flex;
+  width: 250px;
+  /* min-height: 53px; */
+  flex-direction: column;
+}
+
+.second-item {
+  width: 250px;
+  height: 100%;
+  /* min-height: 53px; */
+  display: flex;
+  align-items: center;
+  color: #303133;
+  font-size: 14px;
+  padding-left: 20px;
+  border-bottom: 1px solid #E4E7ED;
+  border-right: 1px solid #E4E7ED;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.second-box-right {
+  display: flex;
+  width: calc(100% - 250px);
+  /* min-height: 53px; */
+  align-items: center;
+  border-bottom: 1px solid #E4E7ED;
+  border-right: 1px solid #E4E7ED;
+  flex-wrap: wrap;
+  padding: 5px 0;
+}
+
+.three-item {
+  width: 164px;
+  height: 30px;
+  line-height: 30px;
+  text-align: left;
+  padding-left: 15px;
 }
 </style>
