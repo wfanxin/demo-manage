@@ -42,7 +42,10 @@
 			</el-table-column>
       <el-table-column prop="request.name" label="操作权限">
 			</el-table-column>
-      <el-table-column prop="response" label="操作结果" :formatter="formatterResponse">
+      <el-table-column prop="response" label="操作结果">
+        <template slot-scope="scope">
+          <div v-html="formatterResponse(scope.row)"></div>
+        </template>
 			</el-table-column>
 			<el-table-column prop="created_at" label="操作时间">
 			</el-table-column>
@@ -55,8 +58,21 @@
 
     <el-dialog title="详情" :visible.sync="dialogTableVisible">
       <el-table :data="detailData" style="width: 100%">
-        <el-table-column prop="request" label="请求信息" style="width: 50%"></el-table-column>
-        <el-table-column prop="response" label="返回结果" style="width: 50%"></el-table-column>
+        <el-table-column prop="request" label="请求信息" style="width: 50%">
+          <template slot-scope="scope">
+            <div>{{ scope.row.request.url }}</div>
+            <div>{</div>
+            <div v-for="(item, index) in scope.row.request.param" :key="index" style="padding-left: 2em;">{{ index }}: {{ item === null ? 'null' : item }}</div>
+            <div>}</div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="response" label="返回结果" style="width: 50%">
+          <template slot-scope="scope">
+            <div>{</div>
+            <div v-for="(item, index) in scope.row.response" :key="index" style="padding-left: 2em;">{{ index }}: {{ item === null ? 'null' : item }}</div>
+            <div>}</div>
+          </template>
+        </el-table-column>
       </el-table>
     </el-dialog>
 		<!--页码-->
@@ -100,8 +116,8 @@ export default {
 
       this.detailData = []
       var tmp = []
-      tmp['request'] = row.request.url + '\r\n' + JSON.stringify(row.request.param)
-      tmp['response'] = JSON.stringify(row.response)
+      tmp['request'] = row.request
+      tmp['response'] = row.response
       this.detailData.push(tmp)
     },
     formatterResponse(row, column, cellValue, index) {
@@ -109,7 +125,7 @@ export default {
       if (parseInt(row['response']['code']) === 200) {
         str += '成功'
       } else {
-        str += '失败\r\n'
+        str += '<span style="color:#F56C6C;">失败</span><br/>'
         str += '原因：' + row['response']['message']
       }
 
