@@ -133,12 +133,12 @@ export default {
         return callback()
       }
 
-      if (value.length <= 8) {
+      if (value.length <= 4) {
         this.pwdLevel = ''
         this.pwd1 = 'grid-content bg-purple pwd-color'
         this.pwd2 = 'grid-content bg-purple pwd-color'
         this.pwd3 = 'grid-content bg-purple pwd-color'
-        return callback(new Error('密码需要大于8位'))
+        return callback(new Error('密码需要大于4位'))
       // eslint-disable-next-line space-unary-ops
       } else if (! value.match(/^[A-Za-z0-9]+$/)) {
         this.pwdLevel = ''

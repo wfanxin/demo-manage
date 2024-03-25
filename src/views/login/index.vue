@@ -2,16 +2,15 @@
   <div class="login-container pull-height" @keyup.enter.native="handleLogin">
     <div class="login-info text-white animated fadeInLeft">
       <ul class="login-info-list">
-        <li class="login-info-item" v-for="item in website.info.list">
+        <li class="login-info-item" v-for="(item, index) in website.info.list" :key="index">
           <i class="el-icon-check"></i>&nbsp;{{item}}
         </li>
       </ul>
     </div>
     <div class="login-border  animated fadeInRight">
       <div class="login-main">
-        <h4 class="login-title">{{website.title}}
-        </h4>
-            <userLogin></userLogin>
+        <h4 class="login-title">{{website.title}}</h4>
+        <userLogin></userLogin>
       </div>
     </div>
   </div>

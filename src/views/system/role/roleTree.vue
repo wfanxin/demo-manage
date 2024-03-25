@@ -87,6 +87,7 @@ import {
 } from '@/api/permission-table'
 
 export default {
+  name: 'roleTree',
   data() {
     return {
       loading: true,

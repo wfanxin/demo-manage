@@ -39,7 +39,7 @@ export default {
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 9, message: '账号或密码错误', trigger: 'blur' }
+          { min: 5, message: '账号或密码错误', trigger: 'blur' }
         ]
       },
       passwordType: 'password'

@@ -111,6 +111,7 @@ import {
 } from '@/api/permission-table'
 
 export default {
+  name: 'roleTable',
   data() {
     return {
       loading: true,

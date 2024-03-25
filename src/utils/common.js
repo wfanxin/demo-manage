@@ -36,8 +36,8 @@ export const fun_date = function(aa) {
   return time2
 }
 
-export const fun_getRoleKey = function() {
-  var roles = JSON.parse(Cookies.get('roles_key'))
+export const fun_getRole = function() {
+  var roles = JSON.parse(Cookies.get('roles'))
   return roles[0]
 }
 

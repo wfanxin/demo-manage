@@ -25,22 +25,22 @@ import Layout from '../views/layout/Layout'
 export const constantRouterMap = [
   {
     path: '',
-    redirect: '/welcome/welcome'
+    redirect: '/mobile/slide'
   },
-  {
-    path: '/welcome',
-    component: Layout,
-    name: '首页',
-    meta: { title: '首页', icon: 'dashboard' },
-    children: [
-      {
-        path: 'welcome',
-        name: '欢迎页',
-        component: () => import('@/views/common/welcome'),
-        meta: { title: '首页', icon: 'dashboard' }
-      }
-    ]
-  },
+  // {
+  //   path: '/welcome',
+  //   component: Layout,
+  //   name: '首页',
+  //   meta: { title: '首页', icon: 'dashboard' },
+  //   children: [
+  //     {
+  //       path: 'welcome',
+  //       name: '首页',
+  //       component: () => import('@/views/common/welcome'),
+  //       meta: { title: '首页', icon: 'documentation' }
+  //     }
+  //   ]
+  // },
   { path: '/login', component: () => import('@/views/login'), name: '登录', hidden: true },
   { path: '/401', component: () => import('@/views/error-page/401'), name: 'page401', hidden: true, meta: { title: 'page401', noCache: true }},
   { path: '/404', component: () => import('@/views/error-page/404'), name: 'page404', hidden: true, meta: { title: 'page404', noCache: true }},
@@ -60,22 +60,31 @@ export default new Router({
 })
 export const asyncRouterMap = [
   {
-    path: '/property',
+    path: '/mobile',
     component: Layout,
     redirect: 'noredirect',
-    name: '物业管理',
-    key: 'Property',
+    name: '网站管理',
+    key: 'Mobile',
     meta: {
-      title: '物业管理',
-      icon: 'chart'
+      title: '网站管理',
+      icon: 'edit'
     },
     children: [{
-      path: 'propertyList',
-      component: () => import('@/views/property/propertyList'),
-      name: '物业列表',
-      key: '@Get:lv_property_propertyList',
+      path: 'slide',
+      component: () => import('@/views/mobile/slide'),
+      name: '轮播图',
+      key: '@Get:lv_mobile_slide_list',
       meta: {
-        title: '物业列表',
+        title: '轮播图',
+        icon: 'documentation'
+      }
+    }, {
+      path: 'article',
+      component: () => import('@/views/mobile/article'),
+      name: '文章列表',
+      key: '@Get:lv_mobile_article_list',
+      meta: {
+        title: '文章列表',
         icon: 'documentation'
       }
     }]
@@ -101,8 +110,7 @@ export const asyncRouterMap = [
       }
     }, {
       path: 'role',
-      // component: () => import('@/views/system/role-tree'), // 树形
-      component: () => import('@/views/system/role-table'), // 表格
+      component: () => import('@/views/system/role'), // 表格
       name: '角色列表',
       key: '@Get:lv_roles',
       // hidden: true,

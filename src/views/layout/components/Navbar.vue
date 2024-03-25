@@ -9,12 +9,13 @@
 
       <span style="position: relative; top: -13px;">您好，{{ username }}</span>
 
-      <nx-top-lock style="cursor:pointer" class="nx-help"></nx-top-lock>
+      <!-- <nx-top-lock style="cursor:pointer" class="nx-help"></nx-top-lock> -->
+
       <!-- <el-tooltip effect="dark" content="全屏" placement="bottom">
         <nx-full-screen class="screenfull right-menu-item"></nx-full-screen>
       </el-tooltip> -->
 
-      <nx-skin class="theme-switch right-menu-item"></nx-skin>
+      <!-- <nx-skin class="theme-switch right-menu-item"></nx-skin> -->
 
       <el-dropdown class="avatar-container right-menu-item" trigger="click">
         <div class="avatar-wrapper">
@@ -84,12 +85,12 @@ export default {
         return callback()
       }
 
-      if (value.length <= 8) {
+      if (value.length <= 4) {
         this.pwdLevel = ''
         this.pwd1 = 'grid-content bg-purple pwd-color'
         this.pwd2 = 'grid-content bg-purple pwd-color'
         this.pwd3 = 'grid-content bg-purple pwd-color'
-        return callback(new Error('密码需要大于8位'))
+        return callback(new Error('密码需要大于4位'))
       // eslint-disable-next-line space-unary-ops
       } else if (! value.match(/^[A-Za-z0-9]+$/)) {
         this.pwdLevel = ''
@@ -164,7 +165,8 @@ export default {
           { required: true, message: '请输入重复密码', trigger: 'blur' },
           { true: false, validator: rePwd, trigger: 'blur' }
         ]
-      }
+      },
+      notification: null
     }
   },
   name: 'navBar',
