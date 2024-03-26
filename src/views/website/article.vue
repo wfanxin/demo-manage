@@ -21,7 +21,7 @@
     <el-table v-loading="loading" :data="data" highlight-current-row style="width: 100%;">
       <el-table-column prop="title" label="标题">
       </el-table-column>
-      <el-table-column prop="image" label="图片">
+      <el-table-column prop="image" label="封面图">
         <template slot-scope="scope">
           <el-image style="width: 50px; height: 50px" :src="scope.row.image" :preview-src-list="[scope.row.image]"></el-image>
         </template>
@@ -43,12 +43,12 @@
     </el-pagination>
 
     <!--编辑界面-->
-    <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" :close-on-click-modal="false" :show-close="false" width="600px">
-      <el-form :model="editForm" label-width="80px" :rules="formRules" ref="form" style="width: 500px;">
+    <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" :close-on-click-modal="false" :show-close="false" width="1000px">
+      <el-form :model="editForm" label-width="80px" :rules="formRules" ref="form" style="width: 900px;">
         <el-form-item label="标题" prop="title">
           <el-input v-model="editForm.title" auto-complete="off" ></el-input>
         </el-form-item>
-        <el-form-item label="图片" prop="image">
+        <el-form-item label="封面图" prop="image">
           <el-upload
             class="avatar-uploader"
             :action="upload_url"
@@ -59,6 +59,21 @@
             <img v-if="editForm.image" :src="editForm.image" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
+        </el-form-item>
+        <el-form-item label="内容" prop="content">
+          <quill-editor ref="myQuillEditor" v-model="editForm.content">
+            <div id="toolbar" slot="toolbar">
+              <el-upload
+                class="avatar-uploader-edit"
+                :action="upload_url"
+                :headers="myHeaders"
+                accept=".jpg, .png, .jpeg"
+                :show-file-list="false"
+                :on-success="uploadSuccessEdit">
+                <el-button size="small" type="primary">上传图片</el-button>
+              </el-upload>
+            </div>
+          </quill-editor>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -75,14 +90,24 @@ import {
   list,
   add,
   edit,
-  del
-} from '@/api/slide'
-import { getToken } from '@/utils/auth'
+  del,
+  detail
+} from '@/api/website/article'
 import {
   fun_getRole
 } from '@/utils/common'
+import { getToken } from '@/utils/auth'
+import {
+  quillEditor
+} from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 
 export default {
+  components: {
+    quillEditor
+  },
   data() {
     return {
       upload_url: process.env.BASE_API + '/lv/service/uploadFile',
@@ -101,7 +126,8 @@ export default {
       editForm: {},
       formRules: {
         title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
-        image: [{ required: true, message: '请上传图片', trigger: 'blur' }]
+        image: [{ required: true, message: '请上传封面图', trigger: 'blur' }],
+        content: [{ required: true, message: '请输入内容', trigger: 'blur' }]
       },
       loading: false,
       data: [],
@@ -165,7 +191,8 @@ export default {
       this.dialogTitle = '添加'
       this.editForm = {
         title: '',
-        image: ''
+        image: '',
+        content: ''
       }
       this.dialogFormVisible = true
     },
@@ -175,9 +202,11 @@ export default {
       this.editForm = {
         id: row.id,
         title: row.title,
-        image: row.image
+        image: row.image,
+        content: row.content
       }
       this.dialogFormVisible = true
+      this.getDetail(row.id)
     },
     handleDel(row) {
       this.$confirm('确认删除吗？', '提示', {
@@ -203,13 +232,28 @@ export default {
     uploadSuccess(res, file, fileList) {
       if (res.code === 0) {
         this.editForm.image = res.file
-        console.log(this.editForm.image)
       } else {
         this.$message({
           message: res.message,
           type: 'error'
         })
       }
+    },
+    uploadSuccessEdit(res, file, fileList) {
+      if (res.code === 0) {
+        this.editForm.content += '<img src="' + res.file + '" />'
+      } else {
+        this.$message({
+          message: res.message,
+          type: 'error'
+        })
+      }
+    },
+    getDetail(id) {
+      const params = { id: id }
+      detail(params).then(res => {
+        this.editForm.content = res.data.content
+      }).catch(() => {})
     },
     getList() {
       const params = Object.assign({}, this.filters)
@@ -232,6 +276,9 @@ export default {
 }
 </script>
 <style>
+  .ql-container  {
+    min-height: 200px;
+  }
   .avatar-uploader .el-upload {
     border: 1px dashed #d9d9d9;
     border-radius: 6px;

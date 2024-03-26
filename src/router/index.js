@@ -60,29 +60,38 @@ export default new Router({
 })
 export const asyncRouterMap = [
   {
-    path: '/mobile',
+    path: '/website',
     component: Layout,
     redirect: 'noredirect',
     name: '网站管理',
-    key: 'Mobile',
+    key: 'Website',
     meta: {
       title: '网站管理',
       icon: 'edit'
     },
     children: [{
+      path: 'option',
+      component: () => import('@/views/website/option'),
+      name: '选项配置',
+      key: '@Get:lv_website_option_detail',
+      meta: {
+        title: '选项配置',
+        icon: 'documentation'
+      }
+    }, {
       path: 'slide',
-      component: () => import('@/views/mobile/slide'),
+      component: () => import('@/views/website/slide'),
       name: '轮播图',
-      key: '@Get:lv_mobile_slide_list',
+      key: '@Get:lv_website_slide_list',
       meta: {
         title: '轮播图',
         icon: 'documentation'
       }
     }, {
       path: 'article',
-      component: () => import('@/views/mobile/article'),
+      component: () => import('@/views/website/article'),
       name: '文章列表',
-      key: '@Get:lv_mobile_article_list',
+      key: '@Get:lv_website_article_list',
       meta: {
         title: '文章列表',
         icon: 'documentation'
