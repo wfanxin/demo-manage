@@ -25,7 +25,7 @@ import Layout from '../views/layout/Layout'
 export const constantRouterMap = [
   {
     path: '',
-    redirect: '/mobile/slide'
+    redirect: '/website/slide'
   },
   // {
   //   path: '/welcome',
