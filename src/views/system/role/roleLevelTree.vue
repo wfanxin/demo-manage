@@ -12,9 +12,9 @@
 				<el-form-item>
 					<el-button type="primary" @click="handleAdd">新增</el-button>
 				</el-form-item>
-        <el-form-item>
+        <!-- <el-form-item>
           <el-button type="danger" @click="batchRemove" :disabled="this.sels.length === 0">批量删除</el-button>
-        </el-form-item>
+        </el-form-item> -->
 			</el-form>
 		</el-col>
 
@@ -49,6 +49,9 @@
      :close-on-click-modal="false"
      :show-close="false" width="50%">
 			<el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
+        <el-form-item label="上级角色" prop="p_id">
+					<el-cascader v-model="editForm.p_id" :options="options" @change="getList" :props="{ checkStrictly: true }" style="width: 100%;"></el-cascader>
+				</el-form-item>
 				<el-form-item label="角色名称" prop="name">
 					<el-input v-model="editForm.name" auto-complete="off"></el-input>
 				</el-form-item>
@@ -79,6 +82,7 @@ import {
   getRoleListPage,
   removeRole,
   batchRemoveRole,
+  getRoleOptions,
   editRole,
   addRole
 } from '@/api/role-table'
@@ -106,6 +110,7 @@ export default {
         create: '创建角色'
       },
       dialogFormVisible: false,
+      options: [],
       filters: {
         name: ''
       },
@@ -118,7 +123,8 @@ export default {
       },
       // 编辑界面数据
       editForm: {
-        name: ''
+        name: '',
+        p_id: 0
       },
 
       addFormVisible: false, // 新增界面是否显示
@@ -174,18 +180,16 @@ export default {
     handleDel(index, row) {
       this.$confirm('确认删除该记录吗?', '提示', {
         type: 'warning'
-      })
-        .then(() => {
-          const para = { id: row.id }
-          removeRole(para).then(res => {
-            this.$message({
-              message: '删除成功',
-              type: 'success'
-            })
-            this.getRoles()
-          }).catch(() => {})
-        })
-        .catch(() => {})
+      }).then(() => {
+        const para = { id: row.id }
+        removeRole(para).then(res => {
+          this.$message({
+            message: '删除成功',
+            type: 'success'
+          })
+          this.getRoles()
+        }).catch(() => {})
+      }).catch(() => {})
     },
     // 显示编辑界面
     handleEdit(index, row) {
@@ -197,6 +201,8 @@ export default {
       var defaultPermissions = JSON.parse(row.permission)
       var that = this
       setTimeout(function() { that.$refs.tree.setCheckedKeys(defaultPermissions) }, 50)
+      this.getRoleOptions()
+      this.getList()
     },
     // 显示新增界面
     handleAdd() {
@@ -206,30 +212,32 @@ export default {
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.editForm = {
-        name: ''
+        name: '',
+        p_id: 0
       }
+      this.getRoleOptions()
+      this.getList()
     },
     // 编辑
     updateData() {
       this.$refs.editForm.validate(valid => {
         if (valid) {
-          this.$confirm('确认提交吗？', '提示', {})
-            .then(() => {
-              const para = {
-                name: this.editForm.name,
-                rolePermissions: this.rolePermissions
-              }
-              editRole(this.defaultId, para).then(res => {
-                this.$message({
-                  message: '提交成功',
-                  type: 'success'
-                })
-                this.$refs['editForm'].resetFields()
-                this.dialogFormVisible = false
-                this.getRoles()
+          this.$confirm('确认提交吗？', '提示', {}).then(() => {
+            const para = {
+              name: this.editForm.name,
+              p_id: this.editForm.p_id,
+              rolePermissions: this.rolePermissions
+            }
+            editRole(this.defaultId, para).then(res => {
+              this.$message({
+                message: '提交成功',
+                type: 'success'
               })
+              this.$refs['editForm'].resetFields()
+              this.dialogFormVisible = false
+              this.getRoles()
             })
-            .catch(() => {})
+          }).catch(() => {})
         }
       })
     },
@@ -237,24 +245,23 @@ export default {
     createData: function() {
       this.$refs.editForm.validate(valid => {
         if (valid) {
-          this.$confirm('确认提交吗？', '提示', {})
-            .then(() => {
-              this.editForm.id = (parseInt(Math.random() * 100)).toString() // mock a id
-              const para = {
-                name: this.editForm.name,
-                rolePermissions: this.rolePermissions
-              }
-              addRole(para).then(res => {
-                this.$message({
-                  message: '提交成功',
-                  type: 'success'
-                })
-                this.$refs['editForm'].resetFields()
-                this.dialogFormVisible = false
-                this.getRoles()
+          this.$confirm('确认提交吗？', '提示', {}).then(() => {
+            this.editForm.id = (parseInt(Math.random() * 100)).toString() // mock a id
+            const para = {
+              name: this.editForm.name,
+              p_id: this.editForm.p_id,
+              rolePermissions: this.rolePermissions
+            }
+            addRole(para).then(res => {
+              this.$message({
+                message: '提交成功',
+                type: 'success'
               })
+              this.$refs['editForm'].resetFields()
+              this.dialogFormVisible = false
+              this.getRoles()
             })
-            .catch(() => {})
+          }).catch(() => {})
         }
       })
     },
@@ -267,32 +274,33 @@ export default {
       var ids = this.sels.map(item => item.id).toString()
       this.$confirm('确认删除选中记录吗？', '提示', {
         type: 'warning'
-      })
-        .then(() => {
-          const para = { ids: ids }
-          batchRemoveRole(para).then(res => {
-            this.$message({
-              message: '删除成功',
-              type: 'success'
-            })
-            this.getRoles()
+      }).then(() => {
+        const para = { ids: ids }
+        batchRemoveRole(para).then(res => {
+          this.$message({
+            message: '删除成功',
+            type: 'success'
           })
-            .catch(err => {
-              // 打印一下错误
-              console.log(err)
-            })
+          this.getRoles()
+        }).catch(err => {
+          // 打印一下错误
+          console.log(err)
         })
-        .catch(() => {})
+      }).catch(() => {})
+    },
+    getRoleOptions() {
+      getRoleOptions({ id: this.defaultId }).then(res => {
+        this.options = res.options
+      }).catch(() => {})
     },
     getList() {
-      getPermissions().then(res => {
+      getPermissions({ action: 'level', p_id: this.editForm.p_id }).then(res => {
         this.permissions = res.list
       }).catch(() => {})
     }
   },
   mounted() {
     this.getRoles()
-    this.getList()
   }
 }
 </script>

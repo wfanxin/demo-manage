@@ -8,10 +8,11 @@ export function getList(params) {
   })
 }
 
-export function getTotal() {
+export function getTotal(params) {
   return request({
     url: '/lv/permissions/total',
-    method: 'get'
+    method: 'get',
+    params: params
   })
 }
 

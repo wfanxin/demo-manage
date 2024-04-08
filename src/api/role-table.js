@@ -40,3 +40,10 @@ export function addRole(params) {
     data: params
   })
 }
+export function getRoleOptions(params) {
+  return request({
+    url: '/lv/roles/getRoleOptions',
+    method: 'get',
+    params: params
+  })
+}

@@ -34,7 +34,7 @@
       @sort-change="sortChange"
       :default-sort = "{prop: 'updated_at', order: 'descending'}"
       style="width: 100%;">
-			<el-table-column type="selection" width="55"></el-table-column>
+			<el-table-column type="selection" width="55" :selectable="selectHandle"></el-table-column>
 			<el-table-column type="index" label="ID" width="60"></el-table-column>
 			<el-table-column prop="name" label="姓名"></el-table-column>
       <el-table-column prop="user_name" label="用户名"></el-table-column>
@@ -46,7 +46,7 @@
 			<el-table-column label="操作" width="150">
 				<template slot-scope="scope">
 					<el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
-					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+					<el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)" :disabled="scope.row.id === 1 || scope.row.id === Number(userId)">删除</el-button>
 				</template>
 			</el-table-column>
 		</el-table>
@@ -96,7 +96,7 @@
 					<el-input v-model="form.re_password" type="password" auto-complete="off"></el-input>
 				</el-form-item>
 
-        <el-form-item label="角色" prop="roles">
+        <el-form-item label="角色" prop="roles" v-if="defaultId !== 1">
           <el-radio-group v-model="form.user_roles">
             <el-radio v-for="role in total_roles" :label="role.id" :key="role.id">{{role.name}}</el-radio>
           </el-radio-group>
@@ -124,6 +124,9 @@ import {
 import {
   getRoleTotal
 } from '@/api/role-table'
+import {
+  getUserId
+} from '@/utils/auth'
 
 export default {
   data() {
@@ -227,6 +230,8 @@ export default {
         re_password: '',
         user_roles: []
       },
+      userId: getUserId(),
+      defaultId: 0,
       users: [],
       total: 0,
       page: 1,
@@ -418,6 +423,9 @@ export default {
             })
         }
       })
+    },
+    selectHandle(row, index) {
+      return !(row.id === 1 || row.id === Number(this.userId))
     },
     // 全选单选多选
     selsChange(sels) {

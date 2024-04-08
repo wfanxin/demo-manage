@@ -25,22 +25,23 @@ import Layout from '../views/layout/Layout'
 export const constantRouterMap = [
   {
     path: '',
-    redirect: '/website/slide'
+    redirect: '/welcome/welcome'
   },
-  // {
-  //   path: '/welcome',
-  //   component: Layout,
-  //   name: '首页',
-  //   meta: { title: '首页', icon: 'dashboard' },
-  //   children: [
-  //     {
-  //       path: 'welcome',
-  //       name: '首页',
-  //       component: () => import('@/views/common/welcome'),
-  //       meta: { title: '首页', icon: 'documentation' }
-  //     }
-  //   ]
-  // },
+  {
+    path: '/welcome',
+    component: Layout,
+    name: '首页',
+    hidden: true,
+    meta: { title: '首页', icon: 'dashboard' },
+    children: [
+      {
+        path: 'welcome',
+        name: '首页',
+        component: () => import('@/views/common/welcome'),
+        meta: { title: '首页', icon: 'documentation' }
+      }
+    ]
+  },
   { path: '/login', component: () => import('@/views/login'), name: '登录', hidden: true },
   { path: '/401', component: () => import('@/views/error-page/401'), name: 'page401', hidden: true, meta: { title: 'page401', noCache: true }},
   { path: '/404', component: () => import('@/views/error-page/404'), name: 'page404', hidden: true, meta: { title: 'page404', noCache: true }},

@@ -27,6 +27,10 @@ function hasPermission(navs, route) {
  */
 function filterAsyncRouter(asyncRouterMap, navs) {
   const accessedRouters = asyncRouterMap.filter(route => {
+    if (route.path === '*') {
+      return true
+    }
+
     if (route.children && route.children.length) {
       route.children = filterAsyncRouter(route.children, navs)
 
