@@ -6,10 +6,10 @@
   <!-- <roleLevelTree></roleLevelTree> -->
 
   <!-- 表格（普通） -->
-  <!-- <roleTable></roleTable> -->
+  <roleTable></roleTable>
 
   <!-- 表格（等级） -->
-  <roleLevelTable></roleLevelTable>
+  <!-- <roleLevelTable></roleLevelTable> -->
 </template>
 
 <script>
