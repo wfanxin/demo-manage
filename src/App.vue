@@ -56,4 +56,21 @@ export default {
     transform-style: preserve-3d;
     visibility: visible;
   }
+  .el-input.is-disabled .el-input__inner {
+    background-color: #ffffff !important;
+    color: #606266 !important;
+  }
+  .el-checkbox__input.is-disabled+span.el-checkbox__label {
+    color: #606266 !important;
+  }
+  .el-checkbox__input.is-disabled .el-checkbox__inner {
+    background-color: #ffffff !important;
+    color: #606266 !important;
+  }
+  .el-checkbox__input.is-disabled.is-checked .el-checkbox__inner {
+    background-color: #ffffff !important;
+  }
+  .el-input.is-disabled .el-input__icon {
+    opacity: 0 !important;
+  }
 </style>
